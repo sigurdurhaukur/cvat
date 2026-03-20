@@ -31,6 +31,7 @@
 }
 
 .cvat-objects-sidebar {
+    position: relative;
     height: 100%;
     overflow: hidden auto;
 
@@ -59,6 +60,32 @@
 
     &.ant-layout-sider-collapsed {
         overflow: initial;
+    }
+}
+
+.cvat-objects-sidebar-resizer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 3;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 3px;
+        width: 2px;
+        height: 100%;
+        background: transparent;
+        transition: background-color 0.2s ease;
+    }
+
+    &:hover::after,
+    &:active::after {
+        background: $border-color-hover;
     }
 }
 

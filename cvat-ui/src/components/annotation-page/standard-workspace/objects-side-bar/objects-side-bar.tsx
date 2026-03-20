@@ -4,7 +4,9 @@
 // SPDX-License-Identifier: MIT
 
 import './styles.scss';
-import React, { Dispatch, TransitionEvent } from 'react';
+import React, {
+    Dispatch, useCallback, useEffect, useRef, useState,
+} from 'react';
 import { AnyAction } from 'redux';
 import { connect } from 'react-redux';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -29,6 +31,26 @@ interface StateToProps {
 
 interface DispatchToProps {
     collapseSidebar(): void;
+}
+
+const DEFAULT_SIDEBAR_WIDTH = 300;
+const MIN_SIDEBAR_WIDTH = 300;
+const MAX_SIDEBAR_WIDTH_RATIO = 0.6;
+const SIDEBAR_WIDTH_LOCAL_STORAGE_KEY = 'cvat-objects-sidebar-width';
+
+function clampSidebarWidth(width: number): number {
+    const maxSidebarWidth = Math.max(MIN_SIDEBAR_WIDTH, Math.floor(window.innerWidth * MAX_SIDEBAR_WIDTH_RATIO));
+    return Math.min(Math.max(width, MIN_SIDEBAR_WIDTH), maxSidebarWidth);
+}
+
+function getInitialSidebarWidth(): number {
+    const savedWidth = Number(window.localStorage.getItem(SIDEBAR_WIDTH_LOCAL_STORAGE_KEY));
+
+    if (!Number.isFinite(savedWidth) || savedWidth <= 0) {
+        return DEFAULT_SIDEBAR_WIDTH;
+    }
+
+    return clampSidebarWidth(savedWidth);
 }
 
 function mapStateToProps(state: CombinedState): StateToProps {
@@ -57,11 +79,59 @@ function ObjectsSideBar(props: StateToProps & DispatchToProps & OwnProps): JSX.E
     const {
         sidebarCollapsed, collapseSidebar, objectsList, jobInstance,
     } = props;
+    const resizeDataRef = useRef<{ startX: number; startWidth: number } | null>(null);
+    const [sidebarWidth, setSidebarWidth] = useState<number>(getInitialSidebarWidth);
+
+    const stopResize = useCallback((): void => {
+        resizeDataRef.current = null;
+        window.document.body.style.removeProperty('cursor');
+        window.document.body.style.removeProperty('user-select');
+        window.removeEventListener('mousemove', resize);
+        window.removeEventListener('mouseup', stopResize);
+    }, []);
+
+    const resize = useCallback((event: MouseEvent): void => {
+        if (!resizeDataRef.current) {
+            return;
+        }
+
+        const { startX, startWidth } = resizeDataRef.current;
+        const nextWidth = clampSidebarWidth(startWidth + startX - event.clientX);
+        setSidebarWidth(nextWidth);
+    }, []);
+
+    const startResize = useCallback((event: React.MouseEvent<HTMLDivElement>): void => {
+        resizeDataRef.current = {
+            startX: event.clientX,
+            startWidth: sidebarWidth,
+        };
+
+        window.document.body.style.cursor = 'col-resize';
+        window.document.body.style.userSelect = 'none';
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResize);
+
+        event.preventDefault();
+        event.stopPropagation();
+    }, [resize, sidebarWidth, stopResize]);
+
+    useEffect(() => (): void => {
+        stopResize();
+    }, [stopResize]);
+
+    useEffect(() => {
+        window.localStorage.setItem(SIDEBAR_WIDTH_LOCAL_STORAGE_KEY, `${sidebarWidth}`);
+        if (!sidebarCollapsed) {
+            window.dispatchEvent(new Event('resize'));
+        }
+    }, [sidebarCollapsed, sidebarWidth]);
 
     const collapse = (): void => {
         const [collapser] = window.document.getElementsByClassName('cvat-objects-sidebar');
-        const listener = (event: TransitionEvent): void => {
-            if (event.target && event.propertyName === 'width' && event.target === collapser) {
+        const listener = (event: Event): void => {
+            const transitionEvent = event as TransitionEvent;
+
+            if (event.target && transitionEvent.propertyName === 'width' && event.target === collapser) {
                 window.dispatchEvent(new Event('resize'));
                 (collapser as HTMLElement).removeEventListener('transitionend', listener as any);
             }
@@ -79,13 +149,19 @@ function ObjectsSideBar(props: StateToProps & DispatchToProps & OwnProps): JSX.E
         <Layout.Sider
             className='cvat-objects-sidebar'
             theme='light'
-            width={300}
+            width={sidebarWidth}
             collapsedWidth={0}
             reverseArrow
             collapsible
             trigger={null}
             collapsed={sidebarCollapsed}
         >
+            {!sidebarCollapsed && (
+                <div
+                    className='cvat-objects-sidebar-resizer'
+                    onMouseDown={startResize}
+                />
+            )}
             {/* eslint-disable-next-line */}
             <span
                 className='cvat-objects-sidebar-sider'
