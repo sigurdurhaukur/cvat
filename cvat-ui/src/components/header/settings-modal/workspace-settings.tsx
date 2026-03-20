@@ -92,8 +92,6 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
         ? rawLabelDisplayMode
         : 'hover';
 
-    // ...existing code...
-
     const minAutoSaveInterval = 1;
     const maxAutoSaveInterval = 60;
     const minFocusedObjectPadding = 0;
