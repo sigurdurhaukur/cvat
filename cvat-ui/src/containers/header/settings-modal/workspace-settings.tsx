@@ -10,7 +10,7 @@ import {
     changeAutoSaveInterval,
     changeFocusedObjectPadding,
     switchShowingInterpolatedTracks,
-    switchShowingObjectsTextAlways,
+    changeLabelDisplayMode,
     switchAutomaticBordering,
     switchIntelligentPolygonCrop,
     changeDefaultApproxPolyAccuracy,
@@ -48,7 +48,7 @@ interface DispatchToProps {
     onChangeAutoSaveInterval(interval: number): void;
     onChangeFocusedObjectPadding(margin: number): void;
     onSwitchShowingInterpolatedTracks(enabled: boolean): void;
-    onSwitchShowingObjectsTextAlways(enabled: boolean): void;
+    onChangeLabelDisplayMode(mode: 'hover' | 'always' | 'never'): void;
     onSwitchAutomaticBordering(enabled: boolean): void;
     onSwitchAdaptiveZoom(enabled: boolean): void;
     onSwitchIntelligentPolygonCrop(enabled: boolean): void;
@@ -102,7 +102,7 @@ const mapDispatchToProps: DispatchToProps = {
     onChangeAutoSaveInterval: changeAutoSaveInterval,
     onChangeFocusedObjectPadding: changeFocusedObjectPadding,
     onSwitchShowingInterpolatedTracks: switchShowingInterpolatedTracks,
-    onSwitchShowingObjectsTextAlways: switchShowingObjectsTextAlways,
+    onChangeLabelDisplayMode: changeLabelDisplayMode,
     onSwitchAutomaticBordering: switchAutomaticBordering,
     onSwitchAdaptiveZoom: switchAdaptiveZoom,
     onSwitchIntelligentPolygonCrop: switchIntelligentPolygonCrop,

@@ -102,6 +102,7 @@ interface StateToProps {
     smoothImage: boolean;
     focusedObjectPadding: number;
     showObjectsTextAlways: boolean;
+    labelDisplayMode: 'hover' | 'always' | 'never';
     textFontSize: number;
     controlPointsSize: number;
     textPosition: 'auto' | 'center';
@@ -191,6 +192,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
             workspace: {
                 focusedObjectPadding,
                 showObjectsTextAlways,
+                    labelDisplayMode,
                 showAllInterpolationTracks,
                 showTagsOnFrame,
                 automaticBordering,
@@ -241,6 +243,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
         smoothImage,
         focusedObjectPadding,
         showObjectsTextAlways,
+            labelDisplayMode,
         textFontSize,
         controlPointsSize,
         textPosition,
@@ -391,6 +394,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
             adaptiveZoom,
             intelligentPolygonCrop,
             showObjectsTextAlways,
+                labelDisplayMode,
             showProjections,
             selectedOpacity,
             opacity,
@@ -415,7 +419,8 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
 
         canvasInstance.configure({
             undefinedAttrValue: config.UNDEFINED_ATTRIBUTE_VALUE,
-            displayAllText: showObjectsTextAlways,
+            displayAllText: labelDisplayMode === 'always',
+            suppressAllText: labelDisplayMode === 'never',
             autoborders: automaticBordering,
             adaptiveZoom,
             showProjections,
@@ -460,6 +465,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
             contrastLevel,
             saturationLevel,
             showObjectsTextAlways,
+                labelDisplayMode,
             textFontSize,
             controlPointsSize,
             textPosition,
@@ -479,7 +485,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
         const { canvasInstance } = this.props as { canvasInstance: Canvas };
 
         if (
-            prevProps.showObjectsTextAlways !== showObjectsTextAlways ||
+            prevProps.labelDisplayMode !== labelDisplayMode ||
             prevProps.automaticBordering !== automaticBordering ||
             prevProps.adaptiveZoom !== adaptiveZoom ||
             prevProps.showProjections !== showProjections ||
@@ -500,7 +506,8 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
         ) {
             canvasInstance.configure({
                 undefinedAttrValue: config.UNDEFINED_ATTRIBUTE_VALUE,
-                displayAllText: showObjectsTextAlways,
+                displayAllText: labelDisplayMode === 'always',
+                suppressAllText: labelDisplayMode === 'never',
                 autoborders: automaticBordering,
                 adaptiveZoom,
                 showProjections,

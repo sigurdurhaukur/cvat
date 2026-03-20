@@ -36,7 +36,7 @@ interface Props {
     onChangeFocusedObjectPadding(padding: number): void;
     onChangeDefaultApproxPolyAccuracy(approxPolyAccuracy: number): void;
     onSwitchShowingInterpolatedTracks(enabled: boolean): void;
-    onSwitchShowingObjectsTextAlways(enabled: boolean): void;
+    onChangeLabelDisplayMode(mode: 'hover' | 'always' | 'never'): void;
     onSwitchAutomaticBordering(enabled: boolean): void;
     onSwitchAdaptiveZoom(enabled: boolean): void;
     onSwitchIntelligentPolygonCrop(enabled: boolean): void;
@@ -53,7 +53,8 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
         autoSaveInterval,
         focusedObjectPadding,
         showAllInterpolationTracks,
-        showObjectsTextAlways,
+        // showObjectsTextAlways,
+        labelDisplayMode,
         automaticBordering,
         adaptiveZoom,
         intelligentPolygonCrop,
@@ -67,7 +68,8 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
         onChangeAutoSaveInterval,
         onChangeFocusedObjectPadding,
         onSwitchShowingInterpolatedTracks,
-        onSwitchShowingObjectsTextAlways,
+        // onChangeLabelDisplayMode,
+        onChangeLabelDisplayMode,
         onSwitchAutomaticBordering,
         onSwitchAdaptiveZoom,
         onSwitchIntelligentPolygonCrop,
@@ -137,21 +139,24 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
                     </Row>
                 </Col>
             </Row>
-            <Row className='cvat-workspace-settings-show-text-always cvat-player-setting'>
+            <Row className='cvat-workspace-settings-label-display-mode cvat-player-setting'>
                 <Col span={24}>
-                    <Checkbox
-                        className='cvat-text-color'
-                        checked={showObjectsTextAlways}
-                        onChange={(event: CheckboxChangeEvent): void => {
-                            onSwitchShowingObjectsTextAlways(event.target.checked);
-                        }}
+                    <Text>Show object details</Text>
+                </Col>
+                <Col span={16}>
+                    <Select
+                        className='cvat-workspace-settings-label-display-dropdown'
+                        value={labelDisplayMode}
+                        onChange={onChangeLabelDisplayMode}
                     >
-                        Always show object details
-                    </Checkbox>
+                        <Select.Option value='hover'>On hover</Select.Option>
+                        <Select.Option value='always'>Always</Select.Option>
+                        <Select.Option value='never'>Never</Select.Option>
+                    </Select>
                 </Col>
                 <Col span={24}>
                     <Text type='secondary'>
-                        Show text for an object on the canvas not only when the object is activated
+                        Choose when to show text for an object on the canvas
                     </Text>
                 </Col>
             </Row>

@@ -34,7 +34,7 @@ const defaultState: SettingsState = {
         focusedObjectPadding: 50,
         automaticBordering: false,
         adaptiveZoom: true,
-        showObjectsTextAlways: false,
+        labelDisplayMode: 'hover',
         showAllInterpolationTracks: false,
         intelligentPolygonCrop: true,
         defaultApproxPolyAccuracy: 9,
@@ -327,12 +327,12 @@ export default (state = defaultState, action: AnyAction): SettingsState => {
                 },
             };
         }
-        case SettingsActionTypes.SWITCH_SHOWING_OBJECTS_TEXT_ALWAYS: {
+        case SettingsActionTypes.CHANGE_LABEL_DISPLAY_MODE: {
             return {
                 ...state,
                 workspace: {
                     ...state.workspace,
-                    showObjectsTextAlways: action.payload.showObjectsTextAlways,
+                    labelDisplayMode: action.payload.labelDisplayMode,
                 },
             };
         }

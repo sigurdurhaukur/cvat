@@ -59,6 +59,7 @@ export enum SettingsActionTypes {
     DISABLE_IMAGE_FILTER = 'DISABLE_IMAGE_FILTER',
     RESET_IMAGE_FILTERS = 'RESET_IMAGE_FILTERS',
     CHANGE_SHAPES_ORIENTATION_VISIBILITY = 'CHANGE_SHAPES_ORIENTATION_VISIBILITY',
+    CHANGE_LABEL_DISPLAY_MODE = 'CHANGE_LABEL_DISPLAY_MODE',
 }
 
 export function changeShapesOpacity(opacity: number): AnyAction {
@@ -314,11 +315,12 @@ export function switchShowingInterpolatedTracks(showAllInterpolationTracks: bool
     };
 }
 
-export function switchShowingObjectsTextAlways(showObjectsTextAlways: boolean): AnyAction {
+
+export function changeLabelDisplayMode(labelDisplayMode: 'hover' | 'always' | 'never'): AnyAction {
     return {
-        type: SettingsActionTypes.SWITCH_SHOWING_OBJECTS_TEXT_ALWAYS,
+        type: SettingsActionTypes.CHANGE_LABEL_DISPLAY_MODE,
         payload: {
-            showObjectsTextAlways,
+            labelDisplayMode,
         },
     };
 }

@@ -995,7 +995,7 @@ export interface WorkspaceSettingsState {
     focusedObjectPadding: number;
     automaticBordering: boolean;
     adaptiveZoom: boolean;
-    showObjectsTextAlways: boolean;
+    labelDisplayMode: 'hover' | 'always' | 'never';
     showAllInterpolationTracks: boolean;
     intelligentPolygonCrop: boolean;
     defaultApproxPolyAccuracy: number;

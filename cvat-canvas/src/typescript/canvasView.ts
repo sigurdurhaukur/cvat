@@ -231,8 +231,12 @@ export class CanvasViewImpl implements CanvasView, Listener {
                     }
 
                     if (text) {
-                        text.removeClass('cvat_canvas_hidden');
-                        this.updateTextPosition(text);
+                        if (!this.configuration.suppressAllText) {
+                            text.removeClass('cvat_canvas_hidden');
+                            this.updateTextPosition(text);
+                        } else {
+                            text.addClass('cvat_canvas_hidden');
+                        }
                     }
                 }
             }
@@ -1301,8 +1305,12 @@ export class CanvasViewImpl implements CanvasView, Listener {
 
                     const showElementText = (): void => {
                         if (text) {
-                            text.removeClass('cvat_canvas_hidden');
-                            this.updateTextPosition(text);
+                            if (!this.configuration.suppressAllText) {
+                                text.removeClass('cvat_canvas_hidden');
+                                this.updateTextPosition(text);
+                            } else {
+                                text.addClass('cvat_canvas_hidden');
+                            }
                         }
                     };
 
@@ -2626,7 +2634,7 @@ export class CanvasViewImpl implements CanvasView, Listener {
     }
 
     private addObjects(states: any[]): void {
-        const { displayAllText } = this.configuration;
+        const { displayAllText, suppressAllText } = this.configuration;
         for (const state of states) {
             const points: number[] = state.points as number[];
 
@@ -2670,9 +2678,14 @@ export class CanvasViewImpl implements CanvasView, Listener {
                 );
             });
 
-            if (displayAllText) {
+            // Only add text if not suppressing all text
+            if (!suppressAllText && displayAllText) {
                 this.addText(state);
                 this.updateTextPosition(this.svgTexts[state.clientID]);
+            }
+            // If suppressAllText, ensure any text is hidden
+            if (suppressAllText && this.svgTexts[state.clientID]) {
+                this.svgTexts[state.clientID].addClass('cvat_canvas_hidden');
             }
 
             this.drawnStates[state.clientID] = this.saveState(state);
@@ -2725,7 +2738,7 @@ export class CanvasViewImpl implements CanvasView, Listener {
 
     private deactivateShape(): void {
         if (this.activeElement.clientID) {
-            const { displayAllText } = this.configuration;
+            const { displayAllText, suppressAllText } = this.configuration;
             const { clientID } = this.activeElement;
             const drawnState = this.drawnStates[clientID];
             const shape = this.svgShapes[clientID];
@@ -2763,9 +2776,9 @@ export class CanvasViewImpl implements CanvasView, Listener {
                 (shape as any).attr('projections', false);
             }
 
-            // TODO: Hide text only if it is hidden by settings
+            // Hide text if not always showing, but only if not suppressing all text
             const text = this.svgTexts[clientID];
-            if (text && !displayAllText) {
+            if (text && (suppressAllText || !displayAllText)) {
                 this.deleteText(clientID);
             }
 
@@ -2812,9 +2825,15 @@ export class CanvasViewImpl implements CanvasView, Listener {
 
         const shape = this.svgShapes[clientID];
         if (!this.svgTexts[clientID]) {
-            this.addText(state);
+            if (!this.configuration.suppressAllText) {
+                this.addText(state);
+            }
         }
-        this.updateTextPosition(this.svgTexts[clientID]);
+        if (!this.configuration.suppressAllText) {
+            this.updateTextPosition(this.svgTexts[clientID]);
+        } else if (this.svgTexts[clientID]) {
+            this.svgTexts[clientID].addClass('cvat_canvas_hidden');
+        }
 
         if (this.stateIsLocked(state)) {
             return;
@@ -2862,10 +2881,16 @@ export class CanvasViewImpl implements CanvasView, Listener {
         };
 
         const showText = (): void => {
-            textList.forEach((text: SVG.Text) => {
-                text.removeClass('cvat_canvas_hidden');
-                this.updateTextPosition(text);
-            });
+            if (this.configuration.suppressAllText) {
+                textList.forEach((text: SVG.Text) => {
+                    text.addClass('cvat_canvas_hidden');
+                });
+            } else {
+                textList.forEach((text: SVG.Text) => {
+                    text.removeClass('cvat_canvas_hidden');
+                    this.updateTextPosition(text);
+                });
+            }
         };
 
         if (state.shapeType !== 'mask') {

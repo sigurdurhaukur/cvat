@@ -80,6 +80,7 @@ export interface Configuration {
     autoborders?: boolean;
     adaptiveZoom?: boolean;
     displayAllText?: boolean;
+    suppressAllText?: boolean;
     textFontSize?: number;
     textPosition?: 'auto' | 'center';
     textContent?: string;
@@ -1010,6 +1011,10 @@ export class CanvasModelImpl extends MasterImpl implements CanvasModel {
             this.data.configuration.focusedObjectPadding = Math.max(
                 configuration.focusedObjectPadding, 0,
             );
+        }
+
+        if (typeof configuration.suppressAllText === 'boolean') {
+            this.data.configuration.suppressAllText = configuration.suppressAllText;
         }
 
         this.notify(UpdateReasons.CONFIG_UPDATED);
