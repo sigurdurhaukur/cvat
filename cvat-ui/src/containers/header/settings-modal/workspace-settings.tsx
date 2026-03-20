@@ -41,6 +41,7 @@ interface StateToProps {
     textPosition: 'auto' | 'center';
     textContent: string;
     showTagsOnFrame: boolean;
+    labelDisplayMode: 'hover' | 'always' | 'never';
 }
 
 interface DispatchToProps {
@@ -77,6 +78,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
         textPosition,
         textContent,
         showTagsOnFrame,
+        labelDisplayMode,
     } = workspace;
 
     return {
@@ -94,6 +96,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
         textPosition,
         textContent,
         showTagsOnFrame,
+        labelDisplayMode,
     };
 }
 

@@ -54,7 +54,7 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
         focusedObjectPadding,
         showAllInterpolationTracks,
         // showObjectsTextAlways,
-        labelDisplayMode,
+        labelDisplayMode: rawLabelDisplayMode,
         automaticBordering,
         adaptiveZoom,
         intelligentPolygonCrop,
@@ -80,6 +80,19 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
         onChangeTextContent,
         onSwitchShowingTagsOnFrame,
     } = props;
+
+    // Defensive: ensure labelDisplayMode is always a valid value
+    const labelDisplayOptions = [
+        { value: 'hover', label: 'On hover' },
+        { value: 'always', label: 'Always' },
+        { value: 'never', label: 'Never' },
+    ];
+    const validLabelDisplayValues = labelDisplayOptions.map(opt => opt.value);
+    const labelDisplayMode = validLabelDisplayValues.includes(rawLabelDisplayMode)
+        ? rawLabelDisplayMode
+        : 'hover';
+
+    // ...existing code...
 
     const minAutoSaveInterval = 1;
     const maxAutoSaveInterval = 60;
@@ -148,11 +161,10 @@ function WorkspaceSettingsComponent(props: Props): JSX.Element {
                         className='cvat-workspace-settings-label-display-dropdown'
                         value={labelDisplayMode}
                         onChange={onChangeLabelDisplayMode}
-                    >
-                        <Select.Option value='hover'>On hover</Select.Option>
-                        <Select.Option value='always'>Always</Select.Option>
-                        <Select.Option value='never'>Never</Select.Option>
-                    </Select>
+                        options={labelDisplayOptions}
+                        // Show the correct label for the current value
+                        getPopupContainer={trigger => trigger.parentNode as HTMLElement}
+                    />
                 </Col>
                 <Col span={24}>
                     <Text type='secondary'>
